@@ -1,3 +1,4 @@
+from database.consumo_DAO import ConsumoDAO
 from database.impianto_DAO import ImpiantoDAO
 
 '''
@@ -11,6 +12,7 @@ class Model:
     def __init__(self):
         self._impianti = None
         self.load_impianti()
+        self._consumo_dao = ConsumoDAO()
 
         self.__sequenza_ottima = []
         self.__costo_ottimo = -1
@@ -26,7 +28,8 @@ class Model:
         :return: lista di tuple --> (nome dell'impianto, media), es. (Impianto A, 123)
         """
         # TODO
-
+        result = ConsumoDAO.get_avg_consumo_by_month(mese)
+        return result
     def get_sequenza_ottima(self, mese:int):
         """
         Calcola la sequenza ottimale di interventi nei primi 7 giorni

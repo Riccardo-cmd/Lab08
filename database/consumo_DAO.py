@@ -39,3 +39,26 @@ class ConsumoDAO:
             cnx.close()
 
         return result
+
+    @staticmethod
+    def get_avg_consumo_by_month(mese: int):
+        cnx = ConnessioneDB.get_connection()
+        result = []
+        if cnx is None:
+            print("❌ Errore di connessione.")
+            return None
+
+        cursor = cnx.cursor(dictionary=True)
+
+        query = """ SELECT id_impianto, AVG(kwh) FROM consumo WHERE MONTH(data) = %s GROUP BY id_impianto"""
+        try:
+            cursor.execute(query, (mese,))
+            result = cursor.fetchall()
+        except Exception as e:
+            print(f"Errore nella query: {e}")
+            result = None
+        finally:
+            cursor.close()
+            cnx.close()
+
+        return result
