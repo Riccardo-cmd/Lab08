@@ -29,7 +29,7 @@ class Controller:
                 ft.Text(f"Il consumo medio nel mese selezionato é:")
             )
             for impianto_media in consumo_medio:
-                self._view.lista_visualizzazione.controls.append(ft.Text(f"{impianto_media[0]}: {impianto_media[1]}"))
+                self._view.lista_visualizzazione.controls.append(ft.Text(f"{impianto_media['id_impianto']}: {impianto_media['AVG(kwh)']}"))
             self._view.update()
 
     def calcola_sequenza(self, e):

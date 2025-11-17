@@ -1,3 +1,5 @@
+import copy
+
 from database.consumo_DAO import ConsumoDAO
 from database.impianto_DAO import ImpiantoDAO
 
@@ -50,6 +52,32 @@ class Model:
     def __ricorsione(self, sequenza_parziale, giorno, ultimo_impianto, costo_corrente, consumi_settimana):
         """ Implementa la ricorsione """
         # TODO
+            # 🟢 A
+        if giorno == 8:
+            if self.__costo_ottimo == -1 or costo_corrente < self.__costo_ottimo:
+                self.__costo_ottimo = costo_corrente
+                self.__sequenza_ottima = sequenza_parziale.copy()
+            return
+
+        for impianto in self._impianti:  # un loop, se necessario
+            # 🔵 B
+            sequenza_parziale.append(impianto.id)
+            costo_variabile = consumi_settimana[impianto.id][giorno - 1]
+            costo_spostamento = 0
+            if ultimo_impianto is not None and ultimo_impianto != impianto.id:
+                costo_spostamento = 5
+
+            self.__ricorsione(
+                sequenza_parziale,
+                giorno + 1,
+                impianto.id,
+                costo_corrente + costo_variabile + costo_spostamento,
+                consumi_settimana
+            )
+            # 🟣 D
+            sequenza_parziale.pop()
+
+
 
     def __get_consumi_prima_settimana_mese(self, mese: int):
         """
@@ -57,4 +85,14 @@ class Model:
         :return: un dizionario: {id_impianto: [kwh_giorno1, ..., kwh_giorno7]}
         """
         # TODO
+        result = ConsumoDAO.get_consumi_prima_settimana(mese)
 
+        # per la ricorsione inseriamo i dati in un dizionario
+        mappa_costi = {1:[], 2:[]}
+        if result is None:
+            return mappa_costi
+
+        for riga in result:
+            mappa_costi[riga['id_impianto']].append(riga['kwh'])
+
+        return mappa_costi

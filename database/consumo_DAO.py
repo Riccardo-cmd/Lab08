@@ -62,3 +62,26 @@ class ConsumoDAO:
             cnx.close()
 
         return result
+
+    @staticmethod
+    def get_consumi_prima_settimana(mese : int) -> list[Consumo] | None:
+        cnx = ConnessioneDB.get_connection()
+        result = []
+        if cnx is None:
+            print("❌ Errore di connessione.")
+            return None
+        cursor = cnx.cursor(dictionary=True)
+        query = """ SELECT data, kwh, id_impianto 
+                    FROM consumo
+                    WHERE MONTH(data) = %s AND DAY(data) <=7
+                    ORDER BY id_impianto, data """
+        try:
+            cursor.execute(query, (mese,))
+            result = cursor.fetchall()
+        except Exception as e:
+            print(f"Errore nella query: {e}")
+            result = None
+        finally:
+            cursor.close()
+            cnx.close()
+        return result
